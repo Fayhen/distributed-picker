@@ -1,60 +1,33 @@
-import { skip } from "node:test"
+import { RangeData, ActionData } from './models'
 
-export type RangeData = {
-  snap: boolean
-  size: number
-  step: number
-  stepInternal: number
-  stepInclusion: boolean
-  range: number[]
-  indexes: number[]
-}
-
-type SnapActionData = {
-  type: 'setSnap'
-  value: boolean
-}
-
-type SizeActionData = {
-  type: 'setSize'
-  value: number
-}
-
-type StepActionData = {
-  type: 'setStep'
-  value: number
-}
-
-type StepInclusionActionData = {
-  type: 'setStepInclusion'
-  value: boolean
-}
-
-
-type ActionData = SizeActionData | StepActionData | StepInclusionActionData | SnapActionData
-
+/**
+ * Computes index distribution with endpoints inclusion.
+ *
+ * @param data Current range data.
+ * @returns Updated range data.
+ */
 function computeBoundDistribution (data: RangeData): RangeData {
   console.log('computing bound')
-  const { size, stepInternal } = data
+  const { size, internalStep } = data
   const range: number[] = size > 0
     ? [ ...Array(size).keys() ]
     : []
 
-  if (size <= 0 || stepInternal <= 0) {
+  if (size <= 0 || internalStep <= 0) {
     return {
       ...data,
       range,
       indexes: []
     }
   }
-  if (stepInternal > size) {
+  if (internalStep > size) {
     return {
       ...data,
       range,
       indexes: [0]
     }
   }
-  if (stepInternal === 1) {
+  if (internalStep === 1) {
     return {
       ...data,
       range,
@@ -74,11 +47,11 @@ function computeBoundDistribution (data: RangeData): RangeData {
   let currentIndex = 0
   let isDone = false
   while (!isDone) {
-    if (currentIndex === 0 && stepInternal > 1) {
-      currentIndex += (stepInternal - 1)
+    if (currentIndex === 0 && internalStep > 1) {
+      currentIndex += (internalStep - 1)
     }
     else {
-      currentIndex += stepInternal
+      currentIndex += internalStep
     }
 
     isDone = currentIndex > (mutatingRange.length - 1)
@@ -95,9 +68,15 @@ function computeBoundDistribution (data: RangeData): RangeData {
   }
 }
 
+/**
+ * Computes index distribution without endpoints inclusion.
+ *
+ * @param data Current range data.
+ * @returns Updated range data.
+ */
 function computeUnboundDistribution(data: RangeData): RangeData {
   console.log('computing unbound')
-  const { size, stepInternal } = data
+  const { size, internalStep } = data
 
   const range = [ ...Array(size).keys() ]
 
@@ -110,30 +89,50 @@ function computeUnboundDistribution(data: RangeData): RangeData {
       isDone = true
     }
     indexes.push(currentIndex)
-    currentIndex += stepInternal
+    currentIndex += internalStep
   }
 
   return { ...data, range, indexes }
 }
 
+/**
+ * Computes index distribution according to current range properties.
+ *
+ * @param data Current range data.
+ * @returns Updated range data.
+ */
 function computeDistribution (data: RangeData): RangeData {
   return data.snap
     ? computeBoundDistribution(data)
     : computeUnboundDistribution(data)
 }
 
+/**
+ * Default range data getter.
+ *
+ * @returns Default range data.
+ */
 export function getDefaultRange (): RangeData {
   return computeDistribution({
     size: 10,
-    step: 2,
-    stepInternal: 2,
-    stepInclusion: true,
+    displayedStep: 2,
+    internalStep: 2,
+    includeStep: true,
     snap: false,
     range: [],
     indexes: []
   })
 }
 
+/**
+ * Sets range properties according to dispatched actions. Index
+ * distribution computation must be triggered after running this
+ * handler.
+ *
+ * @param data Current range data.
+ * @param action Dispatched action data.
+ * @returns Updated range data.
+ */
 function setRangeProperties(data: RangeData, action: ActionData): RangeData {
   switch (action.type) {
     case 'setSize': {
@@ -153,30 +152,30 @@ function setRangeProperties(data: RangeData, action: ActionData): RangeData {
       }
     }
     case 'setStep': {
-      if (action.value === data.step) {
+      if (action.value === data.displayedStep) {
         return data
       }
       if (!action.value || action.value <= 1) {
         return {
           ...data,
-          step: 1,
-          stepInternal: data.stepInclusion ? action.value : action.value + 1,
+          displayedStep: 1,
+          internalStep: data.includeStep ? action.value : action.value + 1,
         }
       }
       return {
         ...data,
-        step: action.value,
-        stepInternal: data.stepInclusion ? action.value : action.value + 1,
+        displayedStep: action.value,
+        internalStep: data.includeStep ? action.value : action.value + 1,
       }
     }
     case 'setStepInclusion': {
-      if (action.value === data.stepInclusion) {
+      if (action.value === data.includeStep) {
         return data
       }
       return {
         ...data,
-        stepInternal: action.value ? data.step : data.step + 1,
-        stepInclusion: action.value
+        internalStep: action.value ? data.displayedStep : data.displayedStep + 1,
+        includeStep: action.value
       }
     }
     case 'setSnap': {
@@ -195,6 +194,14 @@ function setRangeProperties(data: RangeData, action: ActionData): RangeData {
   }
 }
 
+/**
+ * Range properties reducer. Performs dispatched actions and computes
+ * subsequent changes.
+ *
+ * @param data Current range data.
+ * @param action Dispatched action data.
+ * @returns Updated range data.
+ */
 export function distributorReducer(data: RangeData, action: ActionData): RangeData {
   let newRange = setRangeProperties(data, action)
   newRange = computeDistribution(newRange)
