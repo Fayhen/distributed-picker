@@ -27,6 +27,12 @@ export type RangeData = {
    */
   includeStep: boolean
   /**
+   * Index label displaying flag. Controls where the range labels
+   * shown on the UI either corresponds to array indexes or cardinal
+   * numbers.
+   */
+  indexLabels: boolean
+  /**
    * Computed range. A integer array generated through the `size`
    * property.
    */
@@ -76,6 +82,16 @@ export type StepInclusionActionData = {
 }
 
 /**
+ * Label display mode action data. Sets the `indexLabels` range
+ * property.
+ */
+export type LabelModeActionData = {
+  type: 'setIndexedLabels'
+  value: boolean
+}
+
+/**
  * Valid reducer actions.
  */
-export type ActionData = SizeActionData | StepActionData | StepInclusionActionData | SnapActionData
+export type ActionData = SizeActionData | StepActionData |
+  StepInclusionActionData | SnapActionData |LabelModeActionData

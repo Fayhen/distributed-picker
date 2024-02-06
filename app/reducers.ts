@@ -114,11 +114,12 @@ function computeDistribution (data: RangeData): RangeData {
  */
 export function getDefaultRange (): RangeData {
   return computeDistribution({
+    snap: false,
     size: 10,
     displayedStep: 2,
     internalStep: 2,
     includeStep: true,
-    snap: false,
+    indexLabels: false,
     range: [],
     indexes: []
   })
@@ -187,6 +188,15 @@ function setRangeProperties(data: RangeData, action: ActionData): RangeData {
         snap: action.value
       }
     }
+    case 'setIndexedLabels': {
+      if (action.value === data.indexLabels) {
+        return data
+      }
+      return {
+        ...data,
+        indexLabels: action.value
+      }
+    }
     default: {
       console.error(`Invalid action data: ${action}`)
       throw new Error('Invalid action data.')
@@ -204,6 +214,7 @@ function setRangeProperties(data: RangeData, action: ActionData): RangeData {
  */
 export function distributorReducer(data: RangeData, action: ActionData): RangeData {
   let newRange = setRangeProperties(data, action)
+  // TODO: Prevent recomputing if the state has not changed.
   newRange = computeDistribution(newRange)
   return newRange
 }

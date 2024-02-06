@@ -46,6 +46,13 @@ export default function Home() {
       value: !data.includeStep
     })
   }
+
+  function handleToggleLabelMode () {
+    dispatch({
+      type: 'setIndexedLabels',
+      value: !data.indexLabels
+    })
+  }
   
   function SizeIndicator () {
     return (
@@ -109,10 +116,9 @@ export default function Home() {
   }
 
   function RangeBoxes () {
-    const range = Array.from(Array(data.size).keys())
     return data.range.map((index) => {
       const paint = data.indexes.includes(index)
-      return <div key={index}>{RangeBox({ label: `${index + 1}`, paint })}</div>
+      return <div key={index}>{RangeBox({ label: data.indexLabels ? `${index}` : `${index + 1}`, paint })}</div>
     })
   }
 
@@ -142,6 +148,10 @@ export default function Home() {
           <div className="flex items-center cursor-pointer">
             <input id="snap-checkbox" type="checkbox" onChange={handleToggleSnap} className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-md dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></input>
             <label htmlFor="snap-checkbox" className="cursor-pointer ms-2 text-gray-900 dark:text-gray-300">Snap to ends</label>
+          </div>
+          <div className="flex items-center cursor-pointer">
+            <input id="snap-checkbox" type="checkbox" defaultChecked={data.indexLabels} onChange={handleToggleLabelMode} className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-md dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></input>
+            <label htmlFor="snap-checkbox" className="cursor-pointer ms-2 text-gray-900 dark:text-gray-300">Index labels</label>
           </div>
         </div>
       </div>
