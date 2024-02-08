@@ -8,13 +8,18 @@ export type RangeData = {
    */
   snap: boolean
   /**
-   * Range size. How many indexes it contains.
+   * Input range size value. Used on UI form inputs.
    */
-  size: number
+  inputSize: string
   /**
-   * Displayed step value. The value that is displayed on the UI.
+   * Internal range size. Determines it's length and is used on index
+   * picking computations.
    */
-  displayedStep: number
+  internalSize: number
+  /**
+   * Input step value. Used on UI form inputs.
+   */
+  inputStep: string
   /**
    * Internal step value. The value that's actually used for index
    * picking computation. May differ from the displayed step based
@@ -59,7 +64,7 @@ export type SnapActionData = {
  */
 export type SizeActionData = {
   type: 'setSize'
-  value: number
+  value: string
 }
 
 /**
@@ -69,7 +74,7 @@ export type SizeActionData = {
  */
 export type StepActionData = {
   type: 'setStep'
-  value: number
+  value: string
 }
 
 /**

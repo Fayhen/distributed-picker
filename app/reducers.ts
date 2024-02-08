@@ -7,24 +7,17 @@ import { RangeData, ActionData } from './models'
  * @returns Updated range data.
  */
 function computeBoundDistribution (data: RangeData): RangeData {
-  console.log('computing bound')
-  const { size, internalStep } = data
-  const range: number[] = size > 0
-    ? [ ...Array(size).keys() ]
+  console.log('computing bound', data.internalSize, data.internalStep)
+  const { internalSize, internalStep } = data
+  const range: number[] = internalSize > 0
+    ? [ ...Array(internalSize).keys() ]
     : []
 
-  if (size <= 0 || internalStep <= 0) {
+  if (internalSize <= 0 || internalStep <= 0 || internalStep > internalSize) {
     return {
       ...data,
       range,
       indexes: []
-    }
-  }
-  if (internalStep > size) {
-    return {
-      ...data,
-      range,
-      indexes: [0]
     }
   }
   if (internalStep === 1) {
@@ -75,10 +68,19 @@ function computeBoundDistribution (data: RangeData): RangeData {
  * @returns Updated range data.
  */
 function computeUnboundDistribution(data: RangeData): RangeData {
-  console.log('computing unbound')
-  const { size, internalStep } = data
+  console.log('computing unbound', data.internalSize, data.internalStep)
+  const { internalSize, internalStep } = data
+  const range: number[] = internalSize > 0
+    ? [ ...Array(internalSize).keys() ]
+    : []
 
-  const range = [ ...Array(size).keys() ]
+  if (internalSize <= 0 || internalStep <= 0 || internalStep > internalSize) {
+    return {
+      ...data,
+      range,
+      indexes: []
+    }
+  }
 
   let indexes: number[] = []
   let currentIndex = 0
@@ -115,8 +117,9 @@ function computeDistribution (data: RangeData): RangeData {
 export function getDefaultRange (): RangeData {
   return computeDistribution({
     snap: false,
-    size: 10,
-    displayedStep: 2,
+    inputSize: "10",
+    internalSize: 10,
+    inputStep: "2",
     internalStep: 2,
     includeStep: true,
     indexLabels: false,
@@ -137,36 +140,39 @@ export function getDefaultRange (): RangeData {
 function setRangeProperties(data: RangeData, action: ActionData): RangeData {
   switch (action.type) {
     case 'setSize': {
-      if (action.value === data.size) {
+      console.log('setSize', action.value)
+      if (action.value === data.inputSize) {
         return data
       }
-      if (!action.value || action.value <= 1) {
-
+      if (!action.value || parseInt(action.value) < 1) {
         return {
           ...data,
-          size: 1
+          inputSize: parseInt(action.value) <= 0 ? "0" : "",
+          internalSize: 0
         }
       }
       return {
         ...data,
-        size: action.value
+        inputSize: action.value,
+        internalSize: parseInt(action.value)
       }
     }
     case 'setStep': {
-      if (action.value === data.displayedStep) {
+      console.log('setStep', action.value)
+      if (action.value === data.inputStep) {
         return data
       }
-      if (!action.value || action.value <= 1) {
+      if (!action.value || parseInt(action.value) < 1) {
         return {
           ...data,
-          displayedStep: 1,
-          internalStep: data.includeStep ? action.value : action.value + 1,
+          inputStep: parseInt(action.value) <= 0 ? "0" : "",
+          internalStep: 0,
         }
       }
       return {
         ...data,
-        displayedStep: action.value,
-        internalStep: data.includeStep ? action.value : action.value + 1,
+        inputStep: action.value,
+        internalStep: data.includeStep ? parseInt(action.value) : parseInt(action.value) + 1,
       }
     }
     case 'setStepInclusion': {
@@ -175,7 +181,7 @@ function setRangeProperties(data: RangeData, action: ActionData): RangeData {
       }
       return {
         ...data,
-        internalStep: action.value ? data.displayedStep : data.displayedStep + 1,
+        internalStep: action.value ? parseInt(data.inputStep) : parseInt(data.inputStep) + 1,
         includeStep: action.value
       }
     }

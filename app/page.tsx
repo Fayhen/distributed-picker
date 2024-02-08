@@ -22,14 +22,14 @@ export default function Home() {
   function handleSetSize (e: React.ChangeEvent<HTMLInputElement>) {
     dispatch({
       type: 'setSize',
-      value: parseInt(e.target.value)
+      value: e.target.value
     })
   }
 
   function handleSetStep (e: React.ChangeEvent<HTMLInputElement>) {
     dispatch({
       type: 'setStep',
-      value: parseInt(e.target.value)
+      value: e.target.value
     })
   }
   
@@ -57,7 +57,7 @@ export default function Home() {
   function SizeIndicator () {
     return (
       <div className="flex flex-row justify-center items-center w-64">
-        Size: {data.size}
+        Size: {data.internalSize}
         <button onClick={handleToggleSizeForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold ml-4 py-1 px-4 rounded">
           Change
         </button>
@@ -69,13 +69,13 @@ export default function Home() {
     return (
       <div>
         <div className="flex flex-row justify-between items-center">
-          Size: {data.size}
+          Size: {data.internalSize}
           <button onClick={handleToggleSizeForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded">
             Close
           </button>
         </div>
         <div className="mt-2">
-          <input id="size-form" type="number" value={data.size} onChange={handleSetSize} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-1 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" /> 
+          <input id="size-form" type="number" value={data.inputSize} onChange={handleSetSize} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-1 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" /> 
         </div>
       </div>
     )
@@ -84,7 +84,7 @@ export default function Home() {
   function StepIndicator () {
     return (
       <div className="flex flex-row justify-center items-center w-64">
-        Step: {data.displayedStep}
+        Step: {data.internalStep}
         <button onClick={handleToggleStepForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold ml-4 py-1 px-4 rounded">
           Change
         </button>
@@ -96,13 +96,13 @@ export default function Home() {
     return (
       <div>
         <div className="flex flex-row justify-between items-center w-64">
-          Step: {data.displayedStep}
+          Step: {data.internalStep}
           <button onClick={handleToggleStepForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded">
             Close
           </button>
         </div>
         <div className="mt-2">
-          <input id="step-form" type="number" value={data.displayedStep} onChange={handleSetStep} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-1 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" /> 
+          <input id="step-form" type="number" value={data.inputStep} onChange={handleSetStep} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-1 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" /> 
         </div>
       </div>
     )
