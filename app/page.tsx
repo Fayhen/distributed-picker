@@ -56,7 +56,7 @@ export default function Home() {
   
   function SizeIndicator () {
     return (
-      <div className="flex flex-row items-center w-64">
+      <div className="flex flex-row justify-center items-center w-64">
         Size: {data.size}
         <button onClick={handleToggleSizeForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold ml-4 py-1 px-4 rounded">
           Change
@@ -83,7 +83,7 @@ export default function Home() {
 
   function StepIndicator () {
     return (
-      <div className="flex flex-row items-center w-64">
+      <div className="flex flex-row justify-center items-center w-64">
         Step: {data.displayedStep}
         <button onClick={handleToggleStepForm} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold ml-4 py-1 px-4 rounded">
           Change
@@ -123,10 +123,10 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center py-24 px-2">
 
-      <div className="flex flex-row flex-wrap justify-around items-center w-full h-32 px-6">
-        <div className="flex flex-col m-2 w-64">
+      <div id="distribution-controls" className="flex flex-row flex-wrap justify-center items-center md:justify-around items-center w-full px-6 lg:px-24">
+        <div className="flex flex-col m-2 w-64" >
           {
             showSizeForm 
               ? SizeIndicatorWithForm()
@@ -140,7 +140,7 @@ export default function Home() {
               : StepIndicator()
           }
         </div>
-        <div className="flex flex-col justify.around">
+        <div className="flex flex-col justify-around m-2">
           <div className="flex items-center cursor-pointer">
             <input id="step-inclusion-checkbox" type="checkbox" defaultChecked={data.includeStep} onChange={handleToggleStepInclusion} className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-md dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></input>
             <label htmlFor="snap-checkbox" className="cursor-pointer ms-2 text-gray-900 dark:text-gray-300">Include steps</label>
@@ -156,7 +156,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap justify-center px-6 my-10">
+      <div id="distribution-result" className="flex flex-row flex-wrap justify-center w-full my-10 px-6 lg:px-24">
         { RangeBoxes() }
       </div>
     </main>
